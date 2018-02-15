@@ -88,27 +88,25 @@ class AutomationThermostats(appapi.AppDaemon):
 
         today = date.today()
         for weekday in self.schedule:
-            next_scheduled_date = self.calc_next_date(weekday, today)
             for scheduled_time, scheduled_mode in self.schedule[weekday].items():
-                next_scheduled_datetime = datetime.combine(next_scheduled_date, scheduled_time)
-                if weekday.value == today.weekday() and scheduled_time > datetime.now().time():
-                    next_scheduled_datetime = datetime.combine(today, scheduled_time)
+                next_scheduled_datetime = datetime.combine(self.calc_next_date(weekday, today), scheduled_time)
+                if next_scheduled_datetime < datetime.now():
+                    next_scheduled_datetime = next_scheduled_datetime + timedelta(weeks=1)
                 self.log("Scheduling mode {} for weekday {}, time {}, first run {}".format(scheduled_mode, weekday.name, scheduled_time, next_scheduled_datetime))
                 handle = self.run_every(self.switch_to_mode, next_scheduled_datetime, 7 * 24 * 60 * 60, mode=scheduled_mode)
 
         for weekday in self.bathroom_schedule:
-            next_scheduled_date = self.calc_next_date(weekday, today)
             for scheduled_time, scheduled_temperature in self.bathroom_schedule[weekday].items():
-                next_scheduled_datetime = datetime.combine(next_scheduled_date, scheduled_time)
-                if weekday.value == today.weekday() and scheduled_time > datetime.now().time():
-                    next_scheduled_datetime = datetime.combine(today, scheduled_time)
+                next_scheduled_datetime = datetime.combine(self.calc_next_date(weekday, today), scheduled_time)
+                if next_scheduled_datetime < datetime.now():
+                    next_scheduled_datetime = next_scheduled_datetime + timedelta(weeks=1)
                 self.log("Scheduling temperature {} for weekday {}, time {}, first run {}".format(scheduled_temperature, weekday.name, scheduled_time, next_scheduled_datetime))
                 self.run_every(self.bathroom_high, next_scheduled_datetime, 7 * 24 * 60 * 60, temperature=scheduled_temperature)
 
         self.log("Initialized AutomationThermostats")
 
     def switch_to_mode(self, kwargs):
-        self.log("Trying to switch to mode with args {}".format(kwargs['mode']))
+        self.log("Trying to switch to mode {}".format(kwargs['mode']))
         windowstate_wohnzimmer = self.entities.sensor.fenstersensor_wohnzimmer_access_control.state
         windowstate_badezimmer = self.entities.sensor.fenstersensor_badezimmer_access_control.state
 
@@ -216,5 +214,5 @@ class AutomationThermostats(appapi.AppDaemon):
         return todays_schedule[todays_most_recent_time]
 
     def calc_next_date(self, scheduled_weekday: weekday, today: date):
-        date_difference = ((scheduled_weekday.value + today.weekday() + 1) % 7) + 1
+        date_difference = ((scheduled_weekday.value + today.weekday() + 1) % 7)
         return today + timedelta(days=date_difference)
