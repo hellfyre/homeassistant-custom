@@ -22,25 +22,25 @@ class AutomationThermostats(appapi.AppDaemon):
             time(6): "Heat",
             time(8): "Heat Eco",
             time(16): "Heat",
-            time(22): "Heat Eco"
+            time(23,59): "Heat Eco"
         },
         weekday.TUESDAY: {
             time(6): "Heat",
             time(8): "Heat Eco",
             time(16): "Heat",
-            time(22): "Heat Eco"
+            time(23,59): "Heat Eco"
         },
         weekday.WEDNESDAY: {
             time(6): "Heat",
             time(8): "Heat Eco",
             time(16): "Heat",
-            time(22): "Heat Eco"
+            time(23,59): "Heat Eco"
         },
         weekday.THURSDAY: {
             time(6): "Heat",
             time(8): "Heat Eco",
             time(16): "Heat",
-            time(22): "Heat Eco"
+            time(23,59): "Heat Eco"
         },
         weekday.FRIDAY: {
             time(6): "Heat",
@@ -54,7 +54,7 @@ class AutomationThermostats(appapi.AppDaemon):
         },
         weekday.SUNDAY: {
             time(8): "Heat",
-            time(22): "Heat Eco"
+            time(23,59): "Heat Eco"
         }
     }
 
