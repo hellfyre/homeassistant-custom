@@ -214,5 +214,7 @@ class AutomationThermostats(appapi.AppDaemon):
         return todays_schedule[todays_most_recent_time]
 
     def calc_next_date(self, scheduled_weekday: weekday, today: date):
-        date_difference = ((scheduled_weekday.value + today.weekday() + 1) % 7)
-        return today + timedelta(days=date_difference)
+        days_ahead = scheduled_weekday.value - today.weekday()
+        if days_ahead < 0:
+            days_ahead += 7
+        return today + timedelta(days=days_ahead)
